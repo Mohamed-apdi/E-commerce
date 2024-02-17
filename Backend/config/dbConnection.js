@@ -8,7 +8,7 @@ const connectionDB = async () => {
 
     try {
         
-        await mongoose.connect(db_url);
+        await mongoose.connect(db_url,{writeConcern: { w: 'majority' }});
 
         console.log("connection database..");
     } catch (error) {

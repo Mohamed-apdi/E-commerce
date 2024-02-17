@@ -24,6 +24,25 @@ const userSchema = new mongoose.Schema({
         type:String,
         required:true,
     },
+    role: {
+        type: String,
+        default:"user"
+    },
+    isBlocked:{
+        type:Boolean,
+        default: false,
+    },
+    cart:{
+        type:Array,
+        default:[],
+    },
+    address:[{type:mongoose.Schema.Types.ObjectId, ref: "Address"}],
+    wishlist:[{type:mongoose.Schema.Types.ObjectId, ref: "Product"}],
+    refreshToken: {
+        type:String,
+    }
+},{
+    timestamps:true
 });
 
 
@@ -38,8 +57,8 @@ userSchema.pre("save", async function(next) {
     next();
 })
 
-userSchema.methods.comparePassword = async function (givenPassword) {
-    return await bcrypt.compare(givenPassword, this.password);
+userSchema.methods.comparePassword = async function (enterPassword) {
+    return await bcrypt.compare(enterPassword, this.password);
 }
 //Export the model
 const User = mongoose.model('User', userSchema);
