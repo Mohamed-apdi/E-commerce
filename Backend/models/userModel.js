@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
+import crypto from 'crypto';
 // Declare the Schema of the Mongo model
 const userSchema = new mongoose.Schema({
     fastname:{
@@ -40,7 +41,10 @@ const userSchema = new mongoose.Schema({
     wishlist:[{type:mongoose.Schema.Types.ObjectId, ref: "Product"}],
     refreshToken: {
         type:String,
-    }
+    },
+    passwordChange:Date,
+    passwordResetToken:String,
+    passwordExpires:Date,
 },{
     timestamps:true
 });
@@ -59,6 +63,12 @@ userSchema.pre("save", async function(next) {
 
 userSchema.methods.comparePassword = async function (enterPassword) {
     return await bcrypt.compare(enterPassword, this.password);
+}
+userSchema.methods.createResetPasswordToken = async function () { 
+    const resettoken = crypto.randomBytes(32).toString("hex");
+    this.passwordResetToken = crypto.createHash('sha256').update(resettoken).digest('hex');
+    this.passwordExpires = Date.now() + 30 * 60 * 1000; // 10 minutes 
+    return resettoken;
 }
 //Export the model
 const User = mongoose.model('User', userSchema);
