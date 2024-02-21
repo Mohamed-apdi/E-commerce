@@ -1,7 +1,7 @@
 import mongoose from "mongoose"; // Erase if already required
 
 // Declare the Schema of the Mongo model
-const categorySchema = new mongoose.Schema({
+const brandSchema = new mongoose.Schema({
     title:{
         type:String,
         required:true,
@@ -13,6 +13,6 @@ const categorySchema = new mongoose.Schema({
 });
 
 //Export the model
-const Category = mongoose.model('Category', categorySchema);
+const Brand = mongoose.model('Brand', brandSchema);
 
-export default Category;
+export default Brand;

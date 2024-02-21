@@ -235,9 +235,8 @@ export const updatePassword = asyncHandler( async (req,res) => {
         }
     } catch (error) {
         throw new Error(error)
-    }
+    } 
 })
-
 
 export const forgetPasswordToken = asyncHandler( async (req,res) => {
     const {email} = req.body;

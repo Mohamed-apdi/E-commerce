@@ -7,7 +7,9 @@ import morgan from "morgan";
 import cookieParser from "cookie-parser";
 import  productRoute  from "./routes/productRoute.js";
 import  blogRoute  from "./routes/blogRoute.js";
-import categoryRoute from "./routes/categoryRoute.js";
+import blogcategoryRoute from "./routes/blogcategoryRoute.js";
+import categoryRoute from "./routes/pCategoryRoute.js"
+import brandRoute from "./routes/brandRoute.js";
 const app = express();
 const port =  3000;
 connectionDB();
@@ -21,7 +23,8 @@ app.use("/api/user", userRoute);
 app.use("/api/product", productRoute);
 app.use('/api/blog', blogRoute);
 app.use("/api/category", categoryRoute);
-
+app.use("/api/blogcategory", blogcategoryRoute);
+app.use("/api/brand", brandRoute);
 
 
 
