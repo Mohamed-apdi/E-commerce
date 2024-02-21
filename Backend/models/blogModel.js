@@ -22,18 +22,22 @@ const blogSchema = new mongoose.Schema({
         type:Boolean,
         default:false,
     },
-    disLiked:{
+    isDisLiked:{
         type:Boolean,
         default:false,
     },
-    likes:[{
-        type: mongoose.Schema.ObjectId,
-        ref:'User',
-    }],
-    disLikes:[{
-        type: mongoose.Schema.ObjectId,
-        ref:'User',
-    }],
+    likes:[
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+        }
+    ],
+    disLikes:[
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+        }
+    ],
     images:{
         type:String,
         default:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTRSBzDHDFdKeLwG1wPBo0SWncl4XNLhrvpVg&usqp=CAU",
@@ -55,4 +59,6 @@ const blogSchema = new mongoose.Schema({
 });
 
 //Export the model
-export const Blog = mongoose.model('Blog', blogSchema);
+const Blog = mongoose.model('Blog', blogSchema);
+
+export default Blog;

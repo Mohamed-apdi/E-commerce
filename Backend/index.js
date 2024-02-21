@@ -7,6 +7,7 @@ import morgan from "morgan";
 import cookieParser from "cookie-parser";
 import  productRoute  from "./routes/productRoute.js";
 import  blogRoute  from "./routes/blogRoute.js";
+import categoryRoute from "./routes/categoryRoute.js";
 const app = express();
 const port =  3000;
 connectionDB();
@@ -19,6 +20,14 @@ app.use(cookieParser());
 app.use("/api/user", userRoute);
 app.use("/api/product", productRoute);
 app.use('/api/blog', blogRoute);
+app.use("/api/category", categoryRoute);
+
+
+
+
+
+
+// errors handler middleware
 app.use(notFound);
 app.use(errorHandler);
 
