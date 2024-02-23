@@ -69,8 +69,6 @@ export const deleteBlog = asyncHandler( async (req,res) => {
 export const likeblog = asyncHandler(async (req,res) => {
     const { blogId } = req.body;
     validateMongoDbId(blogId)
-
-
         // find the blog which you want to be liked
         const blog  =  await Blog.findById(blogId);
          // find the login user
@@ -91,8 +89,6 @@ export const likeblog = asyncHandler(async (req,res) => {
             },{ new: true});
             res.json(blog);
         };
-       
-
         if (isLiked) {
             const blog = await Blog.findByIdAndUpdate(
               blogId,
