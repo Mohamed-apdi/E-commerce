@@ -7,8 +7,10 @@ import {
     dislikeblog,
     getablog,
     likeblog,
-    updateBlog 
+    updateBlog, 
+    uploudimages
 } from "../controller/blogControl.js";
+import { blogImgResize, upload } from "../middlewares/uploadImages.js";
 const blogRoute = express.Router();
 
 
@@ -19,6 +21,11 @@ blogRoute.get("/all-blog", authMiddleware, allblogs);
 blogRoute.get("/:id", authMiddleware, getablog);
 blogRoute.put("/:id", authMiddleware, isAdmin, updateBlog);
 blogRoute.delete("/:id", authMiddleware, isAdmin, deleteBlog);
-
+blogRoute.put('/upload/:id',
+authMiddleware,
+isAdmin,
+upload.array("images", 2),
+blogImgResize,
+uploudimages);
 
 export default blogRoute;

@@ -6,12 +6,22 @@ import {
     getaProdect, 
     getallProdects, 
     ratings, 
-    updateProduct 
+    updateProduct, 
+    uploudimages
 } from "../controller/productControl.js";
 import {isAdmin, authMiddleware} from "../middlewares/authMiddleware.js"
+import { productImageResize, upload } from "../middlewares/uploadImages.js";
 const productRoute = express.Router();
 
 productRoute.post("/",authMiddleware, isAdmin, createProduct);
+
+productRoute.put('/upload/:id',
+authMiddleware,
+isAdmin,
+upload.array("images", 10),
+productImageResize,
+uploudimages);
+
 
 productRoute.get("/:id",authMiddleware, getaProdect);
 productRoute.put("/rating", authMiddleware, ratings);

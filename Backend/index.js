@@ -10,6 +10,7 @@ import  blogRoute  from "./routes/blogRoute.js";
 import blogcategoryRoute from "./routes/blogcategoryRoute.js";
 import categoryRoute from "./routes/pCategoryRoute.js"
 import brandRoute from "./routes/brandRoute.js";
+import couponRoute from "./routes/cuoponRoute.js";
 const app = express();
 const port =  3000;
 connectionDB();
@@ -25,6 +26,7 @@ app.use('/api/blog', blogRoute);
 app.use("/api/category", categoryRoute);
 app.use("/api/blogcategory", blogcategoryRoute);
 app.use("/api/brand", brandRoute);
+app.use("/api/coupon", couponRoute);
 
 
 
