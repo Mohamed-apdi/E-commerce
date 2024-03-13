@@ -1,6 +1,6 @@
 import express from "express"
 import connectionDB from "./config/dbConnection.js";
-import userRoute from "./routes/userRoute.js";
+import authRoute from "./routes/authRoute.js";
 import { errorHandler, notFound } from "./middlewares/errorHandler.js";
 import bodyParser from "body-parser";
 import morgan from "morgan";
@@ -20,7 +20,7 @@ app.use(bodyParser.json());
 
 
 app.use(cookieParser());
-app.use("/api/user", userRoute);
+app.use("/api/user", authRoute);
 app.use("/api/product", productRoute);
 app.use('/api/blog', blogRoute);
 app.use("/api/category", categoryRoute);

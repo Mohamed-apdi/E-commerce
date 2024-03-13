@@ -55,11 +55,47 @@ export const loginUser = async (req,res) => {
                 lastname:findUser?.lastname,
                 email:findUser?.email,
                 mobile:findUser?.mobile,
-                password:findUser?.password,
-                token:genereteToken(findUser?._id)
+                token:genereteToken(findUser?._id),
             })
         }
        
+}
+
+//login admin 
+export const loginAdmin = async (req,res) => {
+    const {email, password} = req.body;
+
+    const findAdmin = await User.findOne({email});
+    if(findAdmin.role !== 'admin') return res.status(403).send("Not Authorized");
+    if(!findAdmin) return res.status(400).send("Invalid Email please provide a valid email");
+
+
+    const isCorrectPassword = await findAdmin.comparePassword(password);
+
+    if(!isCorrectPassword) res.status(400).send("Incorrect password");
+
+
+    if(findAdmin && isCorrectPassword ) {
+        const refreshToken = await genereteRefreshToken(findAdmin?._id);
+        const updateuser = await User.findByIdAndUpdate(findAdmin.id,{
+            refreshToken: refreshToken,
+        },{
+            new:true
+        });
+        res.cookie('refreshToken', refreshToken,{
+            httpOnly:true,
+            maxAge:72 * 60 * 60 * 1000,
+        })
+        res.json({
+            _id: findAdmin?._id,
+            fastname:findAdmin?.fastname,
+            lastname:findAdmin?.lastname,
+            email:findAdmin?.email,
+            mobile:findAdmin?.mobile,
+            token:genereteToken(findAdmin?._id)
+        })
+    }
+   
 }
 
 // handle refresh token
@@ -142,7 +178,22 @@ export const getAllUser = asyncHandler(async (req,res) => {
         throw new Error(error)
     }
 });
-
+// save address user
+export const saveUserAddress = asyncHandler(async (req,res, next) => {
+    const {id} = req.user;
+    validateMongoDbId(id);
+    try {
+        const updateuser = await User.findByIdAndUpdate(id, {
+            address: req?.body.address,
+        },{
+            new:true,
+        })
+    
+        res.json(updateuser)
+    } catch (error) {
+        throw new Error(error)
+    }
+})
 // get a single user
 
 export const getaUser = asyncHandler( async (req,res) => {
@@ -275,5 +326,16 @@ export const resetPassword = asyncHandler( async (req,res) => {
     user.passwordExpires = undefined;
     await user.save();
     res.json(user);
+})
+
+export const getWishlist = asyncHandler( async (req,res) => {
+    const {id} = req.user;
+
+    try {
+        const findUser = await User.findById(id).populate("wishlist");
+        res.json(findUser);
+    } catch (error) {
+        throw new Error(error)
+    }
 })
 
