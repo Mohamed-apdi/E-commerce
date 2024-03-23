@@ -178,7 +178,7 @@ export const uploudimages = asyncHandler( async (req,res) => {
         const newPath = await uploader(path);
         urls.push(newPath);
         // Delete the file after successful upload to Cloudinary
-        fs.unlink(path);
+        //fs.unlink(path);
       }
 
       const findBlog = await Blog.findByIdAndUpdate(id,{

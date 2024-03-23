@@ -15,29 +15,44 @@ import {
     resetPassword,
     loginAdmin,
     getWishlist,
-    saveUserAddress
+    saveUserAddress,
+    userCart,
+    getUserCart,
+    emptyCart,
+    applyCoupon
 } from "../controller/userControl.js";
 import { authMiddleware, isAdmin } from "../middlewares/authMiddleware.js";
 
 const userRoute = express.Router();
 
-
+//post
 userRoute.post("/register",createUser);
 userRoute.post("/login", loginUser);
+userRoute.post("/cart", authMiddleware, userCart);
+userRoute.post("/cart/applyCoupon",authMiddleware,applyCoupon);
 userRoute.post("/admin-login", loginAdmin);
 userRoute.post("/forget-password-token",authMiddleware, forgetPasswordToken);
-userRoute.put("/reset-password/:token",authMiddleware, resetPassword);
 userRoute.post("/password/:id", authMiddleware, updatePassword);
+
+// get 
 userRoute.get("/all-users", getAllUser);
 userRoute.get("/get-wishlist", authMiddleware , getWishlist);
+userRoute.get("/cart" ,authMiddleware,getUserCart);
 userRoute.get("/refresh", handleRefreshToken);
 userRoute.get("/logout", logOut)
 userRoute.get("/:id", authMiddleware, isAdmin, getaUser);
-userRoute.delete("/:id", deleteUser);
+
+
+// delete
+userRoute.delete("/empty-cart", authMiddleware, isAdmin , emptyCart);
+userRoute.delete("/:id", authMiddleware , deleteUser);
+
+// update
 userRoute.put("/edit-user", authMiddleware, updateUser);
 userRoute.put("/save-address", authMiddleware, saveUserAddress);
 userRoute.put("/block-user/:id", authMiddleware, isAdmin, blockUser);
 userRoute.put("/unblock-user/:id", authMiddleware, isAdmin, unBlockUser);
+userRoute.put("/reset-password/:token",authMiddleware, resetPassword);
 
 
 export default userRoute;

@@ -1,28 +1,37 @@
-const mongoose = require('mongoose'); // Erase if already required
+import mongoose from "mongoose"; 
 
-// Declare the Schema of the Mongo model
-var userSchema = new mongoose.Schema({
-    name:{
+const orderSchema = new mongoose.Schema({
+    products:[
+        {
+            product:{
+                type:mongoose.Schema.Types.ObjectId,
+                ref:"Product"
+            },
+            count:Number,
+            color:String,
+        }
+    ],
+    paymentIntent:{},
+    orderStatus:{
         type:String,
-        required:true,
-        unique:true,
-        index:true,
+        default:"Not processed",
+        enum:[
+            "Not processed",
+            "Cash on Delivery",
+            "Processing",
+            "Dispatched",
+            "Cancelled",
+            "Delivered"]
     },
-    email:{
-        type:String,
-        required:true,
-        unique:true,
-    },
-    mobile:{
-        type:String,
-        required:true,
-        unique:true,
-    },
-    password:{
-        type:String,
-        required:true,
-    },
+    orderby:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"User"
+    }
+},{
+    timeseries:true,
 });
 
 //Export the model
-module.exports = mongoose.model('User', userSchema);
+const Order = mongoose.model('Order', orderSchema);
+
+export default Order;
