@@ -3,6 +3,7 @@ import {
     addWishlist, 
     createProduct, 
     deleteProduct, 
+    deleteimages, 
     getaProdect, 
     getallProdects, 
     ratings, 
@@ -15,7 +16,7 @@ const productRoute = express.Router();
 
 productRoute.post("/",authMiddleware, isAdmin, createProduct);
 
-productRoute.put('/upload/:id',
+productRoute.put('/upload',
 authMiddleware,
 isAdmin,
 upload.array("images", 10),
@@ -31,5 +32,6 @@ productRoute.get("/", authMiddleware, getallProdects);
 productRoute.put("/:id",authMiddleware, isAdmin, updateProduct);
 
 productRoute.delete("/delete/:id",authMiddleware, isAdmin, deleteProduct);
+productRoute.delete("/delete-img/:id",authMiddleware, isAdmin, deleteimages);
 
 export default productRoute;

@@ -10,7 +10,9 @@ import  blogRoute  from "./routes/blogRoute.js";
 import blogcategoryRoute from "./routes/blogcategoryRoute.js";
 import categoryRoute from "./routes/pCategoryRoute.js"
 import brandRoute from "./routes/brandRoute.js";
+import colorRoute from "./routes/colorRoute.js";
 import couponRoute from "./routes/cuoponRoute.js";
+import { enqRoute } from "./routes/enquiryRoute.js";
 const app = express();
 const port =  3000;
 connectionDB();
@@ -26,8 +28,9 @@ app.use('/api/blog', blogRoute);
 app.use("/api/category", categoryRoute);
 app.use("/api/blogcategory", blogcategoryRoute);
 app.use("/api/brand", brandRoute);
+app.use("/api/color", colorRoute);
 app.use("/api/coupon", couponRoute);
-
+app.use("/api/enquiry",enqRoute);
 
 
 
