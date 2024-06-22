@@ -35,6 +35,8 @@ export const getablog = asyncHandler( async (req,res) => {
 
     try {
         const blog = await Blog.findById(id).populate("likes").populate("disLikes");
+        blog.numView += 1;
+        await blog.save();
         res.json(blog);
     } catch (error) {
         throw new Error(error)

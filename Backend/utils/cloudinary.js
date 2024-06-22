@@ -1,5 +1,6 @@
 import cloudinary from "cloudinary";
 import { cloud_api, cloud_name, cloud_secret } from "../config/config.js";
+
 cloudinary.config({
     cloud_name: 'codewithmoha',
     api_key: '265961574972223',

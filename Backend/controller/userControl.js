@@ -1,4 +1,4 @@
-import { genereteToken } from "../config/jwtToken.js";
+import { genereteToken } from "../config/jwtToken.js"
 import User from "../models/userModel.js";
 import asyncHandler from "express-async-handler";
 import { validateMongoDbId } from "../utils/validateMongoDbId.js";
@@ -35,12 +35,12 @@ export const loginUser = async (req,res) => {
 
         const findUser = await User.findOne({email});
 
-        if(!findUser) return res.status(400).send("Invalid Email please provide a valid email");
+        if(!findUser) return res.status(400).json({ message: "Invalid Email, please provide a valid email" });
 
 
         const isCorrectPassword = await findUser.comparePassword(password);
 
-        if(!isCorrectPassword) res.status(400).send("Incorrect password");
+        if(!isCorrectPassword) return res.status(400).json({ message: "Incorrect password" });
 
 
         if(findUser && isCorrectPassword ) {
@@ -50,9 +50,10 @@ export const loginUser = async (req,res) => {
             },{
                 new:true
             });
+            updateuser.save();
             res.cookie('refreshToken', refreshToken,{
                 httpOnly:true,
-                maxAge:72 * 60 * 60 * 1000,
+                maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
             })
             res.json({
                 _id: findUser?._id,
@@ -61,47 +62,50 @@ export const loginUser = async (req,res) => {
                 email:findUser?.email,
                 mobile:findUser?.mobile,
                 token:genereteToken(findUser?._id),
+                refreshToken: refreshToken
             })
         }
        
 }
 
 //login admin 
-export const loginAdmin = async (req,res) => {
-    const {email, password} = req.body;
+export const loginAdmin = async (req, res) => {
+    const { email, password } = req.body;
 
-    const findAdmin = await User.findOne({email});
-    if(findAdmin.role !== 'admin') return res.status(403).send("Not Authorized");
-    if(!findAdmin) return res.status(400).send("Invalid Email please provide a valid email");
+    try {
+        const findAdmin = await User.findOne({ email });
+        if (!findAdmin) return res.status(400).json({ message: "Invalid Email please provide a valid email" });
+        if (findAdmin.role !== 'admin') return res.status(403).json({ message: "Not Authorized" });
 
+        const isCorrectPassword = await findAdmin.comparePassword(password);
+        if (!isCorrectPassword) return res.status(400).json({ message: "Incorrect password" });
 
-    const isCorrectPassword = await findAdmin.comparePassword(password);
-
-    if(!isCorrectPassword) res.status(400).send("Incorrect password");
-
-
-    if(findAdmin && isCorrectPassword ) {
-        const refreshToken = await genereteRefreshToken(findAdmin?._id);
-        const updateuser = await User.findByIdAndUpdate(findAdmin.id,{
+        const refreshToken = await genereteRefreshToken(findAdmin._id);
+        const updateUser = await User.findByIdAndUpdate(findAdmin.id, {
             refreshToken: refreshToken,
-        },{
-            new:true
+        }, {
+            new: true
         });
-        res.cookie('refreshToken', refreshToken,{
-            httpOnly:true,
-            maxAge:72 * 60 * 60 * 1000,
-        })
+        updateUser.save();
+
+        res.cookie('refreshToken', refreshToken, {
+            httpOnly: true,
+            maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+        });
         res.json({
-            _id: findAdmin?._id,
-            fastname:findAdmin?.fastname,
-            lastname:findAdmin?.lastname,
-            email:findAdmin?.email,
-            mobile:findAdmin?.mobile,
-            token:genereteToken(findAdmin?._id)
-        })
+            _id: findAdmin._id,
+            fastname: findAdmin.fastname,
+            lastname: findAdmin.lastname,
+            email: findAdmin.email,
+            mobile: findAdmin.mobile,
+            token: genereteToken(findAdmin._id),
+            refreshToken: refreshToken
+        });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
     }
-   
 }
+
 
 // handle refresh token
 
@@ -110,42 +114,58 @@ export const handleRefreshToken = asyncHandler( async  (req,res) => {
     if(!cookie?.refreshToken) throw new Error('No refresh token in cookies');
     const refreshToken = cookie.refreshToken;
     const user = await User.findOne({refreshToken});
-    if(!user) throw new Error("no refresh token in db or not matched")
+    if(!user) throw new Error("No refresh token in DB or not matched")
 
     Jwt.verify(refreshToken,jwt_secret, (err, decoded) => {
-        if(err || user.id !== decoded.id){
-            throw new Error("there is somrthing wrong with refresh token")
+        if (err || user._id.toString() !== decoded.id){
+            throw new Error("There is something wrong with the refresh token")
         }
-        const accesstoken = genereteRefreshToken(user?._id);
+        const newAccessToken = genereteToken(user._id);
+        const newRefreshToken = genereteRefreshToken(user._id);
+        user.refreshToken = newRefreshToken;
+        user.save();
 
-        res.json({accesstoken})
+        res.cookie('refreshToken', newRefreshToken, {
+            httpOnly: true,
+            secure: true,
+            maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+        });
+
+        res.json({ accessToken: newAccessToken,refreshToken:newRefreshToken });
     })
 
 });
 
-// log out funtion
+// logout funtion
 
 export const logOut = asyncHandler( async (req,res) => {
-        const cookie = req.cookies;
-        if(!cookie?.refreshToken) throw new Error('No refresh token in cookies');
-        const refreshToken = cookie.refreshToken;
-        const user = await User.findOne({refreshToken});
-        if(!user) {
-            res.clearCookie("refreshToken",{
-                httpOnly:true,
-                secure:true,
-            })
-            return res.sendStatus(204) // forbidden
-        }
-        await User.findOneAndUpdate({ refreshToken: refreshToken }, {
-            refreshToken: "",
-          });
-        res.clearCookie("refreshToken",{
-            httpOnly:true,
-            secure:true,
-        })
-        res.sendStatus(204) // forbidden
+    const cookie = req.cookies;
+    if (!cookie?.refreshToken) {
+        res.clearCookie("refreshToken", {
+            httpOnly: true,
+            secure: true,
+        });
+        return res.sendStatus(204); // No content
+    }
+    const refreshToken = cookie.refreshToken;
+    const user = await User.findOne({ refreshToken });
+    if (!user) {
+        res.clearCookie("refreshToken", {
+            httpOnly: true,
+            secure: true,
+        });
+        return res.sendStatus(204); // No content
+    }
+    await User.findOneAndUpdate({ refreshToken: refreshToken }, {
+        refreshToken: "",
+    });
+    res.clearCookie("refreshToken", {
+        httpOnly: true,
+        secure: true,
+    });
+    res.sendStatus(204); // No content
     })
+
 
 
 // update a user
@@ -203,7 +223,7 @@ export const saveUserAddress = asyncHandler(async (req,res, next) => {
 
 export const getaUser = asyncHandler( async (req,res) => {
     
-    const {id} = req.params;
+    const {id} = req.user;
     validateMongoDbId(id);
     try {
 
@@ -277,7 +297,7 @@ export const unBlockUser = asyncHandler(async (req,res) => {
 })
 
 export const updatePassword = asyncHandler( async (req,res) => {
-    const {id} = req.params;
+    const { _id } = req.user;
     const { password } = req.body;
     validateMongoDbId(id)
     try {
@@ -301,7 +321,7 @@ export const forgetPasswordToken = asyncHandler( async (req,res) => {
     try {
         const token = await user.createResetPasswordToken();
         await user.save();
-        const resetUrl = `Hi, please follow this link to reset your password. so This link is valid till 10 minutes from now. <a href='http://localhost:3000/api/user/reset-password/${token}'>Click here</a>`;
+        const resetUrl = `Hi, please follow this link to reset your password. so This link is valid till 10 minutes from now. <a href='http://localhost:5173/reset-password/${token}'>Click here</a>`;
         const data = {
             to:email,
             text:"hey, User have nice day💖✌️",
@@ -315,6 +335,7 @@ export const forgetPasswordToken = asyncHandler( async (req,res) => {
         throw new Error(error)
     }
 });
+
 
 
 export const resetPassword = asyncHandler( async (req,res) => {
@@ -436,9 +457,9 @@ export const createOrder = asyncHandler( async (req,res) => {
         let finalAmount = 0;
 
         if(couponApplied && userCart.totalAfterDiscount){
-            finalAmount = userCart.totalAfterDiscount;
+            finalAmount = userCart.totalAfterDiscount.toFixed(2);
         }else(
-            finalAmount = userCart.cartTotal
+            finalAmount = userCart.cartTotal.toFixed(2)
         );
 
         let newOrder = await new Order({
@@ -465,7 +486,7 @@ export const createOrder = asyncHandler( async (req,res) => {
         });
 
         const updeted = await Product.bulkWrite(update, {});
-        res.json({message:"Success"});
+        res.json({message:"Success", update:updeted});
         
     } catch (error) {
         throw new Error(error)
@@ -478,12 +499,35 @@ export const getOrder = asyncHandler( async (req,res) => {
     const {_id} = req.user;
     validateMongoDbId(_id)
     try {
-        const userOrders = await Order.findOne({orderby:_id}).populate("products.product").exec();
+        const userOrders = await Order.findOne({orderby:_id}).populate("products.product").populate("orderby").exec();
         res.json(userOrders);
     } catch (error) {
         throw new Error(error)
     }
 });
+
+export const getAllOrder = asyncHandler( async (req,res) => {
+    try {
+        const userOrders = await Order.find().populate("products.product")
+        .populate("orderby")
+        .exec();
+        res.json(userOrders);
+    } catch (error) {
+        throw new Error(error)
+    }
+});
+
+export const getRecentOrders =  asyncHandler( async (req,res) => {
+    try {
+        const userOrders = await Order.find().sort({
+            createdAt: -1}).limit(2).populate("products.product")
+            .populate("orderby")
+            .exec();;
+        res.json(userOrders);
+    } catch (error) {
+        throw new Error(error)
+    }
+})
 
 export const updateOrder = asyncHandler( async (req,res) => {
     const {status} = req.body;

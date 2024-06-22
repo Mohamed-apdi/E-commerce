@@ -22,7 +22,9 @@ import {
     applyCoupon,
     createOrder,
     getOrder,
-    updateOrder
+    updateOrder,
+    getAllOrder,
+    getRecentOrders
 } from "../controller/userControl.js";
 import { authMiddleware, isAdmin } from "../middlewares/authMiddleware.js";
 
@@ -31,21 +33,23 @@ const userRoute = express.Router();
 //post
 userRoute.post("/register",createUser);
 userRoute.post("/login", loginUser);
+userRoute.post("/refresh-token", handleRefreshToken);
 userRoute.post("/cart", authMiddleware, userCart);
 userRoute.post("/cart/applyCoupon",authMiddleware,applyCoupon);
 userRoute.post("/admin-login", loginAdmin);
-userRoute.post("/forget-password-token",authMiddleware, forgetPasswordToken);
+userRoute.post("/forget-password-token", forgetPasswordToken);
 userRoute.post("/password/:id", authMiddleware, updatePassword);
 userRoute.post("/cart/cash-order", authMiddleware, createOrder);
 
 // get 
-userRoute.get("/all-users", getAllUser);
+userRoute.get("/all-users", authMiddleware , isAdmin, getAllUser);
+userRoute.get("/all-orders", authMiddleware, isAdmin, getAllOrder);
+userRoute.get("/recent-orders", authMiddleware , isAdmin, getRecentOrders);
 userRoute.get("/get-wishlist", authMiddleware , getWishlist);
 userRoute.get("/cart" ,authMiddleware,getUserCart);
-userRoute.get("/refresh", handleRefreshToken);
 userRoute.get("/get-order", authMiddleware, getOrder);
 userRoute.get("/logout", logOut)
-userRoute.get("/:id", authMiddleware, isAdmin, getaUser);
+userRoute.get("/", authMiddleware, isAdmin, getaUser);
 
 
 // delete
@@ -57,7 +61,7 @@ userRoute.put("/edit-user", authMiddleware, updateUser);
 userRoute.put("/save-address", authMiddleware, saveUserAddress);
 userRoute.put("/block-user/:id", authMiddleware, isAdmin, blockUser);
 userRoute.put("/unblock-user/:id", authMiddleware, isAdmin, unBlockUser);
-userRoute.put("/reset-password/:token",authMiddleware, resetPassword);
+userRoute.put("/reset-password/:token", resetPassword);
 userRoute.put("/update-order/:id",authMiddleware,isAdmin, updateOrder);
 
 

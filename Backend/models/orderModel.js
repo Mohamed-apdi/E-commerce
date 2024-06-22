@@ -28,7 +28,7 @@ const orderSchema = new mongoose.Schema({
         ref:"User"
     }
 },{
-    timeseries:true,
+    timestamps:true
 });
 
 //Export the model

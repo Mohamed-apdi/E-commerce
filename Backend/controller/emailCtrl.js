@@ -11,7 +11,6 @@ export const sendMail = asyncHandler( async (data,req,res) => {
         port: 465,
         secure: true,
         auth: {
-          // TODO: replace `user` and `pass` values from <https://forwardemail.net>
           user: 'maxamedcabdifitaax33@gmail.com',
           pass:'mhqw uofg yxlb fsuq',
         },

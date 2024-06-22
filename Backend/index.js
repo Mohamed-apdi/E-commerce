@@ -13,24 +13,28 @@ import brandRoute from "./routes/brandRoute.js";
 import colorRoute from "./routes/colorRoute.js";
 import couponRoute from "./routes/cuoponRoute.js";
 import { enqRoute } from "./routes/enquiryRoute.js";
+import cors from "cors"
+import uploadRoute from "./routes/uploadRoute.js";
 const app = express();
 const port =  3000;
 connectionDB();
 
 app.use(morgan('dev'));
 app.use(bodyParser.json());
-
+app.use(bodyParser.urlencoded({ extended: false}));
+app.use(cors());
 
 app.use(cookieParser());
 app.use("/api/user", authRoute);
 app.use("/api/product", productRoute);
 app.use('/api/blog', blogRoute);
-app.use("/api/category", categoryRoute);
+app.use("/api/productcategory", categoryRoute);
 app.use("/api/blogcategory", blogcategoryRoute);
 app.use("/api/brand", brandRoute);
 app.use("/api/color", colorRoute);
 app.use("/api/coupon", couponRoute);
 app.use("/api/enquiry",enqRoute);
+app.use("/api/upload",uploadRoute);
 
 
 
