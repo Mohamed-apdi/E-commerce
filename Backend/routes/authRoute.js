@@ -24,7 +24,7 @@ import {
     getOrder,
     updateOrder,
     getAllOrder,
-    getRecentOrders
+    getRecentOrders,
 } from "../controller/userControl.js";
 import { authMiddleware, isAdmin } from "../middlewares/authMiddleware.js";
 
@@ -50,7 +50,6 @@ userRoute.get("/cart" ,authMiddleware,getUserCart);
 userRoute.get("/get-order", authMiddleware, getOrder);
 userRoute.get("/logout", logOut)
 userRoute.get("/", authMiddleware, isAdmin, getaUser);
-
 
 // delete
 userRoute.delete("/empty-cart", authMiddleware , emptyCart);

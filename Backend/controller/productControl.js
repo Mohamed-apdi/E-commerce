@@ -78,6 +78,8 @@ export const getallProdects = asyncHandler( async (req,res) => {
         const queryObj = {...req.query};
         const excludeFields = ['page','sort','limit','fields'];
         excludeFields.forEach((el) => delete queryObj[el] )
+
+        // filtering
         let queryStr = JSON.stringify(queryObj);
         queryStr = queryStr.replace(/\b(gte|gt|lte)\b/g, (match) => `$${match}`);
 
@@ -107,10 +109,13 @@ export const getallProdects = asyncHandler( async (req,res) => {
             const productCount = await Product.countDocuments();
             if (skip >= productCount) throw new Error("This page does not exixts.");
         }
-        console.log(page, limit, skip);
-
+        
+        // populate color field
+        query = query.populate('color');
         const products = await query;
+        console.log(products)
         res.json(products);
+
     } catch (error) {
         throw new Error(error)
     }

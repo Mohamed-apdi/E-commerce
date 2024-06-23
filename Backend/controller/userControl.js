@@ -57,7 +57,7 @@ export const loginUser = async (req,res) => {
             })
             res.json({
                 _id: findUser?._id,
-                fastname:findUser?.fastname,
+                firstname:findUser?.firstname,
                 lastname:findUser?.lastname,
                 email:findUser?.email,
                 mobile:findUser?.mobile,
@@ -94,7 +94,7 @@ export const loginAdmin = async (req, res) => {
         });
         res.json({
             _id: findAdmin._id,
-            fastname: findAdmin.fastname,
+            firstname: findAdmin.firstname,
             lastname: findAdmin.lastname,
             email: findAdmin.email,
             mobile: findAdmin.mobile,
@@ -175,7 +175,7 @@ export const updateUser = asyncHandler( async (req,res) => {
     const {id} = req.user;
     validateMongoDbId(id);
     const updateuser = await User.findByIdAndUpdate(id, {
-        fastname: req?.body.fastname,
+        firstname: req?.body.firstname,
         lastname:req?.body.lastname,
         email:req?.body.email,
         mobile:req?.body.mobile,
@@ -191,9 +191,8 @@ export const updateUser = asyncHandler( async (req,res) => {
     }
 })
 
-// get all users
-
 export const getAllUser = asyncHandler(async (req,res) => {
+    // sort filter limiting fieldes pagination
     try {
         const getUser = await User.find();
 
@@ -203,6 +202,10 @@ export const getAllUser = asyncHandler(async (req,res) => {
         throw new Error(error)
     }
 });
+
+
+
+
 // save address user
 export const saveUserAddress = asyncHandler(async (req,res, next) => {
     const {id} = req.user;
@@ -486,7 +489,7 @@ export const createOrder = asyncHandler( async (req,res) => {
         });
 
         const updeted = await Product.bulkWrite(update, {});
-        res.json({message:"Success", update:updeted});
+        res.json({message:"Success"});
         
     } catch (error) {
         throw new Error(error)

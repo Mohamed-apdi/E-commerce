@@ -3,7 +3,7 @@ import bcrypt from "bcrypt";
 import crypto from 'crypto';
 // Declare the Schema of the Mongo model
 const userSchema = new mongoose.Schema({
-    fastname:{
+    firstname:{
         type:String,
         required:true,
     },

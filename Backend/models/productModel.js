@@ -41,7 +41,10 @@ const productSchema = new mongoose.Schema({
         public_id:String,
         url:String,
     }],
-    color:[],
+    color:[{
+        type: mongoose.Schema.ObjectId,
+        ref: 'Color',
+    }],
     tags:[],
     ratings:[
         {
