@@ -15,6 +15,8 @@ import couponRoute from "./routes/cuoponRoute.js";
 import { enqRoute } from "./routes/enquiryRoute.js";
 import cors from "cors"
 import uploadRoute from "./routes/uploadRoute.js";
+import checkoutRoutes from "./routes/checkoutRoutes.js";
+import webhookRouter from "./routes/webhookRoutes.js";
 const app = express();
 const port =  3000;
 connectionDB();
@@ -26,6 +28,7 @@ app.use(cors());
 
 app.use(cookieParser());
 app.use("/api/user", authRoute);
+app.use("/api/webhook", webhookRouter);
 app.use("/api/product", productRoute);
 app.use('/api/blog', blogRoute);
 app.use("/api/productcategory", categoryRoute);
@@ -35,6 +38,8 @@ app.use("/api/color", colorRoute);
 app.use("/api/coupon", couponRoute);
 app.use("/api/enquiry",enqRoute);
 app.use("/api/upload",uploadRoute);
+app.use('/api/checkout', checkoutRoutes);
+
 
 
 

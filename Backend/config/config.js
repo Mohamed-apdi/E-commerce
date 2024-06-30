@@ -9,3 +9,5 @@ export const pass = process.env.MP;
 export const cloud_name = process.env.CLOUD_NAME;
 export const cloud_api = process.env.CLOUD_API_KEY;
 export const cloud_secret = process.env.CLOUD_SECRET_KEY;
+export const stripe_secret_key = process.env.STRIPE_SECRET_KEY;
+export const stripe_webhook_key = process.env.STRIPE_WEBHOOK_SECRET;

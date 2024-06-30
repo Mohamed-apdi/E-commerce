@@ -1,6 +1,5 @@
-import mongoose from "mongoose"; // Erase if already required
+import mongoose from "mongoose"; 
 
-// Declare the Schema of the Mongo model
 const couponSchema = new mongoose.Schema({
     name:{
         type:String,
@@ -16,9 +15,21 @@ const couponSchema = new mongoose.Schema({
         type:Number,
         required:true,
     },
+    limit: {
+        type: Number,
+        required: true,
+    },
+    used: {
+        type: Number,
+        required: true,
+        default: 0,
+    },usedBy: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    }],
 });
 
-//Export the model
+
 const Coupon = mongoose.model('Coupon', couponSchema);
 
 export default Coupon;

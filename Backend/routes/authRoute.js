@@ -16,17 +16,21 @@ import {
     loginAdmin,
     getWishlist,
     saveUserAddress,
-    userCart,
-    getUserCart,
-    emptyCart,
-    applyCoupon,
-    createOrder,
-    getOrder,
-    updateOrder,
-    getAllOrder,
-    getRecentOrders,
 } from "../controller/userControl.js";
+import { 
+    createOrder, 
+    getAllOrder, 
+    getOrder, 
+    getRecentOrders, 
+    updateOrder 
+} from '../controller/orderController.js';
 import { authMiddleware, isAdmin } from "../middlewares/authMiddleware.js";
+import { 
+    applyCoupon, 
+    emptyCart, 
+    userCart,
+    getUserCart, 
+} from "../controller/userCartController.js";
 
 const userRoute = express.Router();
 
@@ -39,15 +43,15 @@ userRoute.post("/cart/applyCoupon",authMiddleware,applyCoupon);
 userRoute.post("/admin-login", loginAdmin);
 userRoute.post("/forget-password-token", forgetPasswordToken);
 userRoute.post("/password/:id", authMiddleware, updatePassword);
-userRoute.post("/cart/cash-order", authMiddleware, createOrder);
+userRoute.post("/cart/create-order", authMiddleware, createOrder);
 
 // get 
 userRoute.get("/all-users", authMiddleware , isAdmin, getAllUser);
-userRoute.get("/all-orders", authMiddleware, isAdmin, getAllOrder);
+userRoute.get("/orders", authMiddleware, isAdmin, getAllOrder);
 userRoute.get("/recent-orders", authMiddleware , isAdmin, getRecentOrders);
 userRoute.get("/get-wishlist", authMiddleware , getWishlist);
 userRoute.get("/cart" ,authMiddleware,getUserCart);
-userRoute.get("/get-order", authMiddleware, getOrder);
+userRoute.get("/myorders", authMiddleware, getOrder);
 userRoute.get("/logout", logOut)
 userRoute.get("/", authMiddleware, isAdmin, getaUser);
 

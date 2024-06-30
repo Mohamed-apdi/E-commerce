@@ -21,7 +21,11 @@ const orderSchema = new mongoose.Schema({
             "Processing",
             "Dispatched",
             "Cancelled",
-            "Delivered"]
+            "Delivered",
+            "Payment Pending",
+            "Paid",
+            "Payment Failed",
+        ]
     },
     orderby:{
         type:mongoose.Schema.Types.ObjectId,

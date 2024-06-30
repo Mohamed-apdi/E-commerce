@@ -113,13 +113,13 @@ export const getallProdects = asyncHandler( async (req,res) => {
         // populate color field
         query = query.populate('color');
         const products = await query;
-        console.log(products)
         res.json(products);
 
     } catch (error) {
         throw new Error(error)
     }
 });
+
 
 
 // add wishlist

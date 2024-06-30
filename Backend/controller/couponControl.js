@@ -7,6 +7,10 @@ export const createCoupon = asyncHandler( async (req,res) => {
     try {
         
         const newCoupon = await Coupon.create(req.body);
+        const checkCoupon = await Coupon.find(newCoupon);
+        if(checkCoupon){
+            throw new Error("This coupon already exist.")
+        }
         res.json(newCoupon);
     } catch (error) {
         throw new Error(error)
