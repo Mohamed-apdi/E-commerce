@@ -20,9 +20,10 @@ import {
 import { 
     createOrder, 
     getAllOrder, 
-    getOrder, 
+    getSingleOrder, 
     getRecentOrders, 
-    updateOrder 
+    updateOrder, 
+    getOrderStatusEnum
 } from '../controller/orderController.js';
 import { authMiddleware, isAdmin } from "../middlewares/authMiddleware.js";
 import { 
@@ -51,21 +52,22 @@ userRoute.get("/orders", authMiddleware, isAdmin, getAllOrder);
 userRoute.get("/recent-orders", authMiddleware , isAdmin, getRecentOrders);
 userRoute.get("/get-wishlist", authMiddleware , getWishlist);
 userRoute.get("/cart" ,authMiddleware,getUserCart);
-userRoute.get("/myorders", authMiddleware, getOrder);
+userRoute.get("/my-orders/:id", authMiddleware, getSingleOrder);
+userRoute.get('/order-status-enum', authMiddleware, isAdmin, getOrderStatusEnum);
 userRoute.get("/logout", logOut)
-userRoute.get("/", authMiddleware, isAdmin, getaUser);
+userRoute.get("/:id", authMiddleware, isAdmin, getaUser);
 
 // delete
 userRoute.delete("/empty-cart", authMiddleware , emptyCart);
 userRoute.delete("/:id", authMiddleware , deleteUser);
 
 // update
-userRoute.put("/edit-user", authMiddleware, updateUser);
+userRoute.put("/edit-user/:id", authMiddleware, updateUser);
 userRoute.put("/save-address", authMiddleware, saveUserAddress);
 userRoute.put("/block-user/:id", authMiddleware, isAdmin, blockUser);
 userRoute.put("/unblock-user/:id", authMiddleware, isAdmin, unBlockUser);
 userRoute.put("/reset-password/:token", resetPassword);
-userRoute.put("/update-order/:id",authMiddleware,isAdmin, updateOrder);
+userRoute.put("/update-order/:id", authMiddleware,isAdmin, updateOrder);
 
 
 export default userRoute;

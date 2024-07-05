@@ -3,7 +3,7 @@ import Cart from "../models/cartModel.js";
 import Product from "../models/productModel.js";
 import User from "../models/userModel.js";
 import { validateMongoDbId } from "../utils/validateMongoDbId.js";
-import Order from "../models/orderModel.js";
+import Order, { orderStatusEnum } from "../models/orderModel.js";
 
 export const createOrder = asyncHandler(async (req, res) => {
     const { paymentIntentId, couponApplied } = req.body;
@@ -52,16 +52,18 @@ export const createOrder = asyncHandler(async (req, res) => {
   });
 
 
-export const getOrder = asyncHandler( async (req,res) => {
-    const {_id} = req.user;
-    validateMongoDbId(_id)
+export const getSingleOrder = asyncHandler( async (req,res) => {
+    const { id } = req.params;
+    validateMongoDbId(id);
+
     try {
-        const userOrders = await Order.findOne({orderby:_id}).populate("products.product").populate("orderby").exec();
-        res.json(userOrders);
+        const findOrder = await Order.findById(id).populate("products.product").populate("orderby").exec();
+        res.send(findOrder)
     } catch (error) {
-        throw new Error(error)
+        res.send(error);
     }
-});
+})
+
 
 export const getAllOrder = asyncHandler( async (req,res) => {
     try {
@@ -72,6 +74,17 @@ export const getAllOrder = asyncHandler( async (req,res) => {
         throw new Error(error)
     }
 });
+
+export const getOrderStatusEnum = (req, res) => {
+    try {
+      if (!orderStatusEnum || orderStatusEnum.length === 0) {
+        return res.status(404).json({ message: 'Order status enum values not found' });
+      }
+      res.status(200).json(orderStatusEnum);
+    } catch (error) {
+      res.status(500).json({ message: 'Server error', error: error.message });
+    }
+  };
 
 export const getRecentOrders =  asyncHandler( async (req,res) => {
     try {

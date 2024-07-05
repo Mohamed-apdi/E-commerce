@@ -171,21 +171,27 @@ export const logOut = asyncHandler( async (req,res) => {
 // update a user
 
 export const updateUser = asyncHandler( async (req,res) => {
-    
-    const {id} = req.user;
+    const {id} = req.params;
     validateMongoDbId(id);
-    const updateuser = await User.findByIdAndUpdate(id, {
-        firstname: req?.body.firstname,
-        lastname:req?.body.lastname,
-        email:req?.body.email,
-        mobile:req?.body.mobile,
-    },{
-        new:true,
-    })
-
-    res.json(updateuser)
     try {
-        
+        const updatedUser = await User.findByIdAndUpdate(
+            id,
+            {
+                firstname: req.body.firstname,
+                lastname: req.body.lastname,
+                email: req.body.email,
+                mobile: req.body.mobile,
+                role: req.body.role,
+                isBlocked: req.body.isBlocked,
+            },
+            {
+                new: true,
+            }
+        );
+        if (!updatedUser) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        res.json(updatedUser);
     } catch (error) {
         throw new Error(error)
     }
@@ -226,10 +232,9 @@ export const saveUserAddress = asyncHandler(async (req,res, next) => {
 
 export const getaUser = asyncHandler( async (req,res) => {
     
-    const {id} = req.user;
+    const {id} = req.params;
     validateMongoDbId(id);
     try {
-
         const getaUser = await User.findById(id);
 
         res.json(getaUser);

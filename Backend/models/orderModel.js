@@ -11,7 +11,12 @@ const orderSchema = new mongoose.Schema({
             color:String,
         }
     ],
-    paymentIntent:{},
+    paymentIntent:{
+        id: String,
+        amount: Number,
+        currency: String,
+        status: String,
+    },
     orderStatus:{
         type:String,
         default:"Not processed",
@@ -37,5 +42,5 @@ const orderSchema = new mongoose.Schema({
 
 //Export the model
 const Order = mongoose.model('Order', orderSchema);
-
+export const orderStatusEnum = orderSchema.path('orderStatus').enumValues;
 export default Order;
