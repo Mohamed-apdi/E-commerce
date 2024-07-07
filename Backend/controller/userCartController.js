@@ -5,38 +5,66 @@ import Product from "../models/productModel.js";
 import Coupon from "../models/couponModel.js";
 import { validateMongoDbId } from "../utils/validateMongoDbId.js";
 
-export const userCart = asyncHandler( async (req,res) => {
-    const { cart } = req.body;
+export const userCart = asyncHandler(async (req, res) => {
+  const { cart } = req.body;
   const { _id } = req.user;
   validateMongoDbId(_id);
+
   try {
     let products = [];
     const user = await User.findById(_id);
-    // check if user already have product in cart
+
+    // Check if user already has a cart and delete it
     const alreadyExistCart = await Cart.findOne({ orderby: user._id });
     if (alreadyExistCart) {
-      alreadyExistCart.deleteOne();
+      await alreadyExistCart.deleteOne();
     }
+
+    const productIds = new Set();
+
     for (let i = 0; i < cart.length; i++) {
-      let object = {};
       let product = await Product.findById(cart[i]._id);
-      object.product = product;
-      object.count = cart[i].count;
-      object.color = cart[i].color;
-      let getPrice = await Product.findById(cart[i]._id).select("price").exec();
-      object.price = getPrice.price;
+      if (!product) continue; // Skip if the product doesn't exist
+
+      // Check if the product count is 0
+      if (cart[i].count === 0) {
+        return res.status(400).json({ message: 'Product count cannot be zero'});
+      }
+
+      // Check if the product quantity is less than the requested count
+      if (product.quantity < cart[i].count) {
+        return res.status(400).json({ message: 'out of stock'});
+      }
+
+      // Check if the product is already in the cart
+      if (productIds.has(cart[i]._id)) continue;
+      productIds.add(cart[i]._id);
+
+      let object = {
+        product,
+        count: cart[i].count,
+        color: cart[i].color,
+        price: product.price,
+      };
+
       products.push(object);
     }
-    
+
+    if (products.length === 0) {
+      return res.status(400).json({ message: 'No valid products to add to the cart' });
+    }
+
     let cartTotal = 0;
     for (let i = 0; i < products.length; i++) {
       cartTotal += products[i].price * products[i].count;
     }
+
     let newCart = await new Cart({
       products,
       cartTotal,
-      orderby: user?._id,
+      orderby: user._id,
     }).save();
+
     res.json(newCart);
   } catch (error) {
     throw new Error(error);

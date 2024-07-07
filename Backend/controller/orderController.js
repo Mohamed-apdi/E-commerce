@@ -12,11 +12,17 @@ export const createOrder = asyncHandler(async (req, res) => {
   
     const user = await User.findById(_id);
     const userCart = await Cart.findOne({ orderby: user._id });
-    console.log(userCart)
     
     if (!userCart || userCart.products.length === 0) {
         return res.status(400).json({ message: 'Your cart is empty' });
     }
+
+    // Filter out products with zero quantity
+    const validProducts = userCart.products.filter(item => item.count > 0);
+
+  if (validProducts.length === 0) {
+    return res.status(400).json({ message: 'Cannot create an order with zero quantity products' });
+  }
 
 
     let finalAmount = 0;
@@ -31,16 +37,18 @@ export const createOrder = asyncHandler(async (req, res) => {
       products: userCart.products,
       paymentIntent: {
         id: paymentIntentId,
+        method: "card",
         amount: finalAmount,
-        currency: 'usd',
-        status: 'pending',
+        status: "Payment Pending",
+        created: Date.now(),
+        currency: "usd",
       },
       orderby: user._id,
       orderStatus: 'Payment Pending',
     }).save();
   
     // Decrease product quantity and increase sold count
-    const bulkOptions = userCart.products.map(item => ({
+    const bulkOptions = validProducts.map(item => ({
       updateOne: {
         filter: { _id: item.product._id },
         update: { $inc: { quantity: -item.count, sold: +item.count } },
@@ -69,6 +77,7 @@ export const getAllOrder = asyncHandler( async (req,res) => {
     try {
         const userOrders = await Order.find().populate("products.product")
         .populate("orderby").exec();
+        console.log(userOrders);
         res.json(userOrders);
     } catch (error) {
         throw new Error(error)
