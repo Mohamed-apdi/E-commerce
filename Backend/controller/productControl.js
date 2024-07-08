@@ -13,8 +13,10 @@ export const createProduct = asyncHandler( async (req,res) => {
             req.body.slug = slugify(req.body.title)
         }
        const newProduct = await Product.create(req.body);
+       
        res.json(newProduct);
     } catch (error) {
+      console.log("p: " + error)
         throw new Error(error)
     }
 });
@@ -112,6 +114,12 @@ export const getallProdects = asyncHandler( async (req,res) => {
         
         // populate color field
         query = query.populate('color');
+
+        // Update stock status
+      //   products.forEach(product => {
+      //     product.stock = product.quantity > 0 ? 'in stock' : 'out of stock';
+      // });
+
         const products = await query;
         res.json(products);
 

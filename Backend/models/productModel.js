@@ -33,6 +33,10 @@ const productSchema = new mongoose.Schema({
         type: Number,
         required: true,
       },
+      stock:{
+        type: String,
+        default:"in stock"
+      },
     sold:{
         type:Number,
         default:0,
@@ -45,7 +49,9 @@ const productSchema = new mongoose.Schema({
         type: mongoose.Schema.ObjectId,
         ref: 'Color',
     }],
-    tags:[],
+    tags:[{
+        type: String,
+      }],
     ratings:[
         {
             star: Number,

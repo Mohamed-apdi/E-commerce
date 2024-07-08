@@ -6,58 +6,62 @@ import { validateMongoDbId } from "../utils/validateMongoDbId.js";
 import Order, { orderStatusEnum } from "../models/orderModel.js";
 
 export const createOrder = asyncHandler(async (req, res) => {
-    const { paymentIntentId, couponApplied } = req.body;
-    const { _id } = req.user;
-    validateMongoDbId(_id);
-  
-    const user = await User.findById(_id);
-    const userCart = await Cart.findOne({ orderby: user._id });
-    
-    if (!userCart || userCart.products.length === 0) {
-        return res.status(400).json({ message: 'Your cart is empty' });
-    }
+  const { paymentIntentId, couponApplied } = req.body;
+  const { _id } = req.user;
 
-    // Filter out products with zero quantity
-    const validProducts = userCart.products.filter(item => item.count > 0);
+  // Validate MongoDB ID
+  validateMongoDbId(_id);
 
-  if (validProducts.length === 0) {
-    return res.status(400).json({ message: 'Cannot create an order with zero quantity products' });
+  // Fetch User and Cart
+  const user = await User.findById(_id);
+  const userCart = await Cart.findOne({ orderby: user._id });
+
+  // Check if the cart exists and contains products
+  if (!userCart || userCart.products.length === 0) {
+      return res.status(400).json({ message: 'Your cart is empty' });
   }
 
+  // Filter out products with zero quantity
+  const validProducts = userCart.products.filter(item => item.count > 0);
+  if (validProducts.length === 0) {
+      return res.status(400).json({ message: 'Cannot create an order with zero quantity products' });
+  }
 
-    let finalAmount = 0;
-
-    if (couponApplied && userCart.totalAfterDiscount) {
+  // Calculate final amount
+  let finalAmount = 0;
+  if (couponApplied && userCart.totalAfterDiscount) {
       finalAmount = userCart.totalAfterDiscount.toFixed(2);
-    } else {
+  } else {
       finalAmount = userCart.cartTotal.toFixed(2);
-    }
-  
-    const newOrder = await new Order({
-      products: userCart.products,
+  }
+
+  // Create new order
+  const newOrder = await new Order({
+      products: validProducts, // Use validProducts instead of userCart.products
       paymentIntent: {
-        id: paymentIntentId,
-        method: "card",
-        amount: finalAmount,
-        status: "Payment Pending",
-        created: Date.now(),
-        currency: "usd",
+          id: paymentIntentId,
+          method: "card",
+          amount: finalAmount,
+          status: "Payment Pending",
+          created: Date.now(),
+          currency: "usd",
       },
       orderby: user._id,
       orderStatus: 'Payment Pending',
-    }).save();
-  
-    // Decrease product quantity and increase sold count
-    const bulkOptions = validProducts.map(item => ({
+  }).save();
+
+  // Update product quantity and sold count
+  const bulkOptions = validProducts.map(item => ({
       updateOne: {
-        filter: { _id: item.product._id },
-        update: { $inc: { quantity: -item.count, sold: +item.count } },
+          filter: { _id: item.product._id },
+          update: { $inc: { quantity: -item.count, sold: +item.count } },
       },
-    }));
-    await Product.bulkWrite(bulkOptions, {});
-  
-    res.json({ message: 'Order created successfully', newOrder });
-  });
+  }));
+  await Product.bulkWrite(bulkOptions, {});
+
+  // Return response
+  res.json({ message: 'Order created successfully', newOrder });
+});
 
 
 export const getSingleOrder = asyncHandler( async (req,res) => {
@@ -75,8 +79,7 @@ export const getSingleOrder = asyncHandler( async (req,res) => {
 
 export const getAllOrder = asyncHandler( async (req,res) => {
     try {
-        const userOrders = await Order.find().populate("products.product")
-        .populate("orderby").exec();
+        const userOrders = await Order.find().populate("products.product").populate("orderby").exec();
         console.log(userOrders);
         res.json(userOrders);
     } catch (error) {

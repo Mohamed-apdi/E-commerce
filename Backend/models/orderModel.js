@@ -19,7 +19,6 @@ const orderSchema = new mongoose.Schema({
             "Not processed",
             "Cash on Delivery",
             "Processing",
-            "Dispatched",
             "Cancelled",
             "Delivered",
             "Payment Pending",
