@@ -15,7 +15,7 @@ export const authMiddleware = asyncHandler( async (req, res, next) => {
                 const decoded = Jwt.verify(token,jwt_secret);
                 const user = await User.findById(decoded?.id)
                 req.user = user;
-                next()
+                next();
             }
         } catch (error) {
             throw new Error("Not authorized token expired. please login again")
