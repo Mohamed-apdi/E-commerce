@@ -17,6 +17,7 @@ import cors from "cors"
 import uploadRoute from "./routes/uploadRoute.js";
 import checkoutRoutes from "./routes/checkoutRoutes.js";
 import webhookRouter from "./routes/webhookRoutes.js";
+import { testRou } from "./routes/test.js";
 const app = express();
 const port =  3000;
 connectionDB();
@@ -39,8 +40,7 @@ app.use("/api/coupon", couponRoute);
 app.use("/api/enquiry",enqRoute);
 app.use("/api/upload",uploadRoute);
 app.use('/api/checkout', checkoutRoutes);
-
-
+app.use('/api/test', testRou);
 
 
 
