@@ -20,5 +20,5 @@ testRou.get("/miki", (req,res) => {
 })
 
 testRou.get("/jacar", (req,res) => {
-    res.json({ name: "Mahdi", name: "Moha", name:"Sadaq", name:"Chees Master", name:"Xasuuni", name:"undefined other jacar" });
+    res.json({ name1: "Mahdi", name2: "Moha", name3:"Sadaq", name4:"Chees Master", name5:"Xasuuni", name6:"undefined other jacar" });
 })
