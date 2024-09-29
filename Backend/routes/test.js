@@ -10,7 +10,7 @@ testRou.get("/m-salim", (req,res) => {
     res.json({ name: "Maxamed saalim", age: "25", educations: "Jamhuraya University", message: "Your Legend Keep Working and Never Mine" });
 })
 
-testRou.get("/m-salim", (req,res) => {
+testRou.get("/mahdi", (req,res) => {
     res.json({ name: "Mahdi Abdulqaadir", age: "20", educations: "Jamhuraya University", message: "Your Legend Keep Working and Never Mine", Town: "Bakaaro in COD" });
 
 })
