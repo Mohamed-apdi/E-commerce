@@ -9,10 +9,18 @@ import User from "../models/userModel.js"
  // create product
 export const createProduct = asyncHandler( async (req,res) => {
     try {
+
+      const productData = {
+        ...req.body,
+        images: req.body.images || [],
+      }
+
         if(req.body.title){
-            req.body.slug = slugify(req.body.title)
+            productData.slug = slugify(req.body.title)
         }
-       const newProduct = await Product.create(req.body);
+
+       
+       const newProduct = await Product.create(productData);
        
        res.json(newProduct);
     } catch (error) {
@@ -34,6 +42,15 @@ export const updateProduct = asyncHandler( async (req,res) => {
             res.status(404);
             throw new Error('Product not found');
         }
+
+        // Handle images if they were uploaded
+        if (req.files && req.files.length > 0) {
+          const images = req.files.map(file => ({
+              url: file.secure_url,
+              public_id: file.public_id
+          }));
+          req.body.images = images;  // Update images in the product body
+      }
 
 
         const updatedProduct  = await Product.findByIdAndUpdate(id,req.body,{new: true,});

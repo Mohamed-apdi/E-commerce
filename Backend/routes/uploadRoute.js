@@ -11,7 +11,8 @@ uploadRoute.post(
     authMiddleware, 
     isAdmin, 
     upload.array('images', 5),
-    resizeAndUploadImage);
+    resizeAndUploadImage, uploadImages);
+
 uploadRoute.delete('/delete-img/:id', authMiddleware, isAdmin, deleteImages);
 
 export default uploadRoute;

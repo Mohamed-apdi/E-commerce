@@ -11,9 +11,11 @@ import {
 
 
 import {isAdmin, authMiddleware} from "../middlewares/authMiddleware.js"
+import { resizeAndUploadImage, upload } from "../middlewares/uploadImages.js";
+import { uploadImages } from "../controller/uploadImages.js";
 const productRoute = express.Router();
 
-productRoute.post("/",authMiddleware, isAdmin, createProduct);
+productRoute.post("/",authMiddleware, isAdmin, upload.array("images", 5), uploadImages, resizeAndUploadImage, createProduct);
 
 
 

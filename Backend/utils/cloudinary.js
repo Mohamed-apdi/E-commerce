@@ -1,6 +1,6 @@
 // utils file call cloudinary.js 
 import { v2 as cloudinary }  from "cloudinary";
-import { cloud_api, cloud_name, cloud_secret } from "../config/config.js";
+// import { cloud_api, cloud_name, cloud_secret } from "../config/config.js";
 
 cloudinary.config({
     cloud_name: 'codewithmoha',
