@@ -1,5 +1,5 @@
 // router file call uploadRouter
-c
+import express from 'express';
 import { isAdmin, authMiddleware } from '../middlewares/authMiddleware.js';
 import { uploadImages, deleteImages } from '../controller/uploadImages.js';
 import { upload, resizeAndUploadImage } from '../middlewares/uploadImages.js';
