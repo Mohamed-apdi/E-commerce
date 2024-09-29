@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+     "build": "npm install --legacy-peer-deps && vercel build",
     "start": "node ./Backend/index.js",
     "server": "nodemon ./Backend/index.js"
   },
