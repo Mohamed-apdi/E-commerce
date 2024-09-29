@@ -18,3 +18,7 @@ testRou.get("/mahdi", (req,res) => {
 testRou.get("/miki", (req,res) => {
     res.json({ name: "Ashwaag Ibraahim", age: "97", educations: "Jamhuraya University", message: "The first 97 year-old person in the world to graduate from university.", JK:"Your 18 😒" });
 })
+
+testRou.get("/jacars", (req,res) => {
+    res.json({ name: "Mahdi", name: "Moha", name:"Sadaq", name:"Chees Master", name:"Xasuuni", name:"undefined other jacar" });
+})
