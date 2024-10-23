@@ -40,7 +40,6 @@ app.use("/api/coupon", couponRoute);
 app.use("/api/enquiry",enqRoute);
 app.use("/api/upload",uploadRoute);
 app.use('/api/checkout', checkoutRoutes);
-app.use('/api/test', testRou); // Correct path handling
 
 
 
