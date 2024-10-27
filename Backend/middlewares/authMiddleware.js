@@ -18,7 +18,11 @@ export const authMiddleware = asyncHandler( async (req, res, next) => {
                 next();
             }
         } catch (error) {
-            throw new Error("Not authorized token expired. please login again")
+            if (error instanceof Jwt.TokenExpiredError) {
+                return res.status(401).json({ message: "Token expired. Please log in again." });
+            }
+            return res.status(401).json({ message: "Not authorized. Invalid token." });
+        
         }
     }else{
         throw new Error("there is no token attached to the header.")
