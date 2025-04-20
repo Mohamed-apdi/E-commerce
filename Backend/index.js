@@ -17,6 +17,7 @@ import cors from "cors"
 import uploadRoute from "./routes/uploadRoute.js";
 import checkoutRoutes from "./routes/checkoutRoutes.js";
 import webhookRouter from "./routes/webhookRoutes.js";
+import notificationRoute from "./routes/notificationRouter.js";
 const app = express();
 const port =  3000;
 connectionDB();
@@ -28,6 +29,7 @@ app.use(bodyParser.json());
 
 app.use(cookieParser());
 app.use("/api/user", authRoute);
+app.use("/api/notify", notificationRoute);
 app.use("/api/webhook", webhookRouter);
 app.use("/api/product", productRoute);
 app.use('/api/blog', blogRoute);
