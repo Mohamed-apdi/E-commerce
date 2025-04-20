@@ -8,7 +8,7 @@ const uploadRoute = express.Router();
 
 uploadRoute.post(
     '/', 
-    upload.array('images', 5),
+    upload.array('images', 1000),
     resizeAndUploadImage, uploadImages);
 
 uploadRoute.delete('/delete-img/:id', authMiddleware, isAdmin, deleteImages);
