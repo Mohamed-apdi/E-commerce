@@ -8,8 +8,6 @@ const uploadRoute = express.Router();
 
 uploadRoute.post(
     '/', 
-    authMiddleware, 
-    isAdmin, 
     upload.array('images', 5),
     resizeAndUploadImage, uploadImages);
 
